@@ -1,1122 +1,429 @@
-\# Custom Threat Intelligence Platform
+# 🛡️ Custom Threat Intelligence Platform
 
+A full-stack **Threat Intelligence Platform (TIP)** built to ingest, normalize, enrich, analyze, and visualize cyber threat intelligence from multiple public sources.
 
+Built with **Python, FastAPI, PostgreSQL, React, Docker, AbuseIPDB, NVD, CISA KEV, and Ollama**, with a focus on practical SOC and threat-intelligence workflows.
 
-A full-stack \*\*Threat Intelligence Platform (TIP)\*\* built to collect, normalize, enrich, analyze, and visualize cyber threat intelligence from multiple public sources.
+> **Portfolio project focused on Threat Intelligence, IOC investigation, vulnerability intelligence, enrichment, risk scoring, and security operations.**
 
+---
 
+## 🚀 Key Features
 
-The project combines \*\*Python, FastAPI, PostgreSQL, React, Docker, threat-intelligence feeds, IOC enrichment, CVE analysis, risk scoring, and LLM-assisted processing\*\* into a single platform.
+* 🌐 Ingests intelligence from multiple public threat feeds
+* 🔎 Extracts and tracks **IOCs, CVEs, threat articles, and threat groups**
+* 🗃️ Stores normalized intelligence in **PostgreSQL**
+* 🛡️ Integrates **CISA KEV** and **NVD** vulnerability intelligence
+* 🔍 Enriches IP addresses using **AbuseIPDB**
+* 📊 Calculates IOC risk scores using multiple intelligence signals
+* ⚠️ Displays CVSS severity and CISA KEV status
+* 🤖 Uses **Ollama / Llama 3.2** for LLM-assisted article processing and chatbot functionality
+* 🔐 Supports authentication and MFA
+* ⚡ Provides a **FastAPI REST API**
+* 🖥️ Provides a **React/Vite investigation dashboard**
+* 🐳 Runs locally using Docker
 
+---
 
-
-> \*\*Portfolio focus:\*\* This project demonstrates practical skills relevant to entry-level SOC Analyst, Cybersecurity Analyst, Threat Intelligence, and Security Operations roles.
-
-
-
-\---
-
-
-
-\## Key Capabilities
-
-
-
-\* Collects intelligence from multiple public threat feeds
-
-\* Ingests and normalizes raw threat data
-
-\* Deduplicates and stores structured intelligence in PostgreSQL
-
-\* Tracks \*\*IOCs, CVEs, threat articles, and APT groups\*\*
-
-\* Integrates \*\*CISA KEV\*\* and \*\*NVD\*\* vulnerability intelligence
-
-\* Enriches IP addresses using \*\*AbuseIPDB\*\*
-
-\* Calculates IOC risk scores using multiple intelligence signals
-
-\* Provides CVSS severity and KEV status for vulnerabilities
-
-\* Uses Ollama for LLM-assisted article processing and chatbot functionality
-
-\* Provides a REST API through FastAPI
-
-\* Provides a React/Vite web interface for investigation and visualization
-
-\* Supports authentication and MFA
-
-\* Runs locally using Docker and Windows/PowerShell
-
-
-
-\---
-
-
-
-\## Architecture
-
-
+## 🏗️ Architecture
 
 ```text
-
-&#x20;                   ┌─────────────────────────┐
-
-&#x20;                   │     Public Sources      │
-
-&#x20;                   │                         │
-
-&#x20;                   │ CISA KEV │ NVD          │
-
-&#x20;                   │ ThreatFox │ Hacker News  │
-
-&#x20;                   │ Ransomware.live          │
-
-&#x20;                   └────────────┬────────────┘
-
-&#x20;                                │
-
-&#x20;                                ▼
-
-&#x20;                   ┌─────────────────────────┐
-
-&#x20;                   │     Raw Data Layer      │
-
-&#x20;                   │       raw\_items         │
-
-&#x20;                   └────────────┬────────────┘
-
-&#x20;                                │
-
-&#x20;                                ▼
-
-&#x20;                   ┌─────────────────────────┐
-
-&#x20;                   │ Processing \& Normalizing │
-
-&#x20;                   │                         │
-
-&#x20;                   │ Deduplication           │
-
-&#x20;                   │ IOC Extraction           │
-
-&#x20;                   │ CVE Processing           │
-
-&#x20;                   │ Article Processing       │
-
-&#x20;                   └────────────┬────────────┘
-
-&#x20;                                │
-
-&#x20;                                ▼
-
-&#x20;                   ┌─────────────────────────┐
-
-&#x20;                   │       PostgreSQL        │
-
-&#x20;                   │                         │
-
-&#x20;                   │ IOCs │ CVEs │ Articles  │
-
-&#x20;                   │ APT Groups │ Enrichment │
-
-&#x20;                   └────────────┬────────────┘
-
-&#x20;                                │
-
-&#x20;               ┌────────────────┴────────────────┐
-
-&#x20;               ▼                                 ▼
-
-&#x20;    ┌─────────────────────┐           ┌─────────────────────┐
-
-&#x20;    │ Enrichment \& Risk   │           │     FastAPI API     │
-
-&#x20;    │                     │           │                     │
-
-&#x20;    │ AbuseIPDB           │           │ Authentication      │
-
-&#x20;    │ NVD                 │           │ IOC APIs            │
-
-&#x20;    │ Risk Scoring        │           │ CVE APIs            │
-
-&#x20;    │ Confidence           │           │ Statistics          │
-
-&#x20;    └─────────────────────┘           └──────────┬──────────┘
-
-&#x20;                                                 │
-
-&#x20;                                                 ▼
-
-&#x20;                                     ┌─────────────────────┐
-
-&#x20;                                     │    React / Vite     │
-
-&#x20;                                     │                     │
-
-&#x20;                                     │ Dashboard           │
-
-&#x20;                                     │ IOCs                │
-
-&#x20;                                     │ CVEs                │
-
-&#x20;                                     │ Threat Feed         │
-
-&#x20;                                     │ APT Groups          │
-
-&#x20;                                     └─────────────────────┘
-
+                    ┌──────────────────────────┐
+                    │     Threat Sources       │
+                    │                          │
+                    │ CISA KEV │ NVD           │
+                    │ ThreatFox │ Hacker News   │
+                    │ Ransomware.live           │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+                    ┌──────────────────────────┐
+                    │      Raw Data Layer       │
+                    │        raw_items          │
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+                    ┌──────────────────────────┐
+                    │ Processing & Normalization│
+                    │                          │
+                    │ IOC / CVE / Article      │
+                    │ extraction + deduplication│
+                    └────────────┬─────────────┘
+                                 │
+                                 ▼
+                    ┌──────────────────────────┐
+                    │        PostgreSQL         │
+                    │                          │
+                    │ IOCs │ CVEs │ Articles   │
+                    │ APT Groups │ Enrichment  │
+                    └────────────┬─────────────┘
+                                 │
+              ┌──────────────────┴──────────────────┐
+              ▼                                     ▼
+    ┌─────────────────────┐              ┌─────────────────────┐
+    │ Enrichment & Risk   │              │     FastAPI API     │
+    │                     │              │                     │
+    │ NVD                 │              │ Authentication      │
+    │ AbuseIPDB           │              │ IOC APIs            │
+    │ Risk Scoring        │              │ CVE APIs            │
+    │ Confidence Signals  │              │ Statistics          │
+    └─────────────────────┘              └──────────┬──────────┘
+                                                    │
+                                                    ▼
+                                      ┌─────────────────────────┐
+                                      │      React / Vite       │
+                                      │                         │
+                                      │ Dashboard │ IOCs        │
+                                      │ CVEs │ Threat Feed      │
+                                      │ APT / Threat Groups     │
+                                      └─────────────────────────┘
 ```
 
+---
 
+## 📊 Project Results
 
-\---
-
-
-
-\# Project Results
-
-
-
-The platform was tested with real threat-intelligence data and produced the following results:
-
-
+The platform was tested with collected threat-intelligence data and produced:
 
 | Metric                        |      Result |
-
 | ----------------------------- | ----------: |
+| CISA KEV vulnerabilities      |   **1,728** |
+| NVD-enriched CVEs             |   **1,727** |
+| Critical CVEs                 |     **615** |
+| High CVEs                     |     **903** |
+| Medium CVEs                   |     **201** |
+| Low CVEs                      |       **8** |
+| Threat intelligence articles  |      **50** |
+| Total IOCs                    |     **120** |
+| IP addresses                  |      **20** |
+| SHA-256 hashes                |       **6** |
+| MD5 hashes                    |       **1** |
+| AbuseIPDB-enriched IPs        | **20 / 20** |
+| Low-risk IOCs                 |     **119** |
+| Medium-risk IOCs              |       **1** |
+| High-risk IOCs                |       **0** |
+| High-confidence threat groups |       **4** |
 
-| CISA KEV vulnerabilities      |   \*\*1,728\*\* |
+### Identified Threat Groups
 
-| NVD-enriched CVEs             |   \*\*1,727\*\* |
+* **Clop**
+* **JADEPUFFER**
+* **ShinyHunters**
+* **UNC2546**
 
-| Critical CVEs                 |     \*\*615\*\* |
+---
 
-| High CVEs                     |     \*\*903\*\* |
+## 🖥️ Screenshots
 
-| Medium CVEs                   |     \*\*201\*\* |
+### 🔐 Authentication
 
-| Low CVEs                      |       \*\*8\*\* |
+![CTI Login](docs/01_cti_login_page.png)
 
-| Threat intelligence articles  |      \*\*50\*\* |
+Login interface with authentication and MFA support.
 
-| Total IOCs                    |     \*\*120\*\* |
+### 📊 Main Dashboard
 
-| IP addresses                  |      \*\*20\*\* |
+![CTI Dashboard](docs/02_cti_dashboard.png)
 
-| SHA-256 hashes                |       \*\*6\*\* |
+Overview of collected intelligence, vulnerabilities, IOCs, articles, and threat groups.
 
-| MD5 hashes                    |       \*\*1\*\* |
+### 🔎 Enriched Dashboard
 
-| AbuseIPDB-enriched IPs        | \*\*20 / 20\*\* |
+![Enriched Dashboard](docs/03_cti_enriched_dashboard.png)
 
-| Low-risk IOCs                 |     \*\*119\*\* |
+Displays processed enrichment and IOC risk-analysis results.
 
-| Medium-risk IOCs              |       \*\*1\*\* |
+### ⚠️ CVE Vulnerabilities
 
-| High-risk IOCs                |       \*\*0\*\* |
+![CVE Vulnerabilities](docs/04_cti_cve_vulnerabilities.png)
 
-| High-confidence threat groups |       \*\*4\*\* |
+CVE intelligence with CVSS severity, publication information, and CISA KEV status.
 
+### 📰 Threat Intelligence Feed
 
+![Threat Feed](docs/05_cti_threat_feed.png)
 
-\### Threat Groups Identified
+Processed threat-intelligence articles collected from external sources.
 
+### 🎯 APT / Threat Groups
 
+![APT Groups](docs/06_cti_apt_groups.png)
 
-\* Clop
+High-confidence threat groups identified during article processing.
 
-\* JADEPUFFER
+---
 
-\* ShinyHunters
+## 🧰 Technology Stack
 
-\* UNC2546
+| Category            | Technologies                                               |
+| ------------------- | ---------------------------------------------------------- |
+| Backend             | Python, FastAPI, Pydantic, Uvicorn                         |
+| Frontend            | React, Vite, JavaScript, HTML, CSS                         |
+| Database            | PostgreSQL 16                                              |
+| Infrastructure      | Docker, Docker Desktop                                     |
+| Threat Intelligence | CISA KEV, NVD, ThreatFox, Ransomware.live, The Hacker News |
+| Enrichment          | AbuseIPDB                                                  |
+| AI                  | Ollama, Llama 3.2                                          |
+| Development         | Windows, PowerShell, Git                                   |
 
+---
 
-
-\---
-
-
-
-\# Screenshots
-
-
-
-\## Authentication
-
-
-
-!\[CTI Login](docs/01\_cti\_login\_page.png)
-
-
-
-The platform provides an authenticated interface with login and MFA support.
-
-
-
-\---
-
-
-
-\## Main Dashboard
-
-
-
-!\[CTI Dashboard](docs/02\_cti\_dashboard.png)
-
-
-
-The dashboard provides an overview of collected intelligence, vulnerabilities, IOCs, articles, and threat groups.
-
-
-
-\---
-
-
-
-\## Enriched Dashboard
-
-
-
-!\[Enriched Dashboard](docs/03\_cti\_enriched\_dashboard.png)
-
-
-
-Displays enrichment and risk-analysis results after processing IOC intelligence.
-
-
-
-\---
-
-
-
-\## CVE Vulnerabilities
-
-
-
-!\[CVE Vulnerabilities](docs/04\_cti\_cve\_vulnerabilities.png)
-
-
-
-Displays vulnerability intelligence including CVSS severity, published information, and CISA KEV status.
-
-
-
-\---
-
-
-
-\## Threat Intelligence Feed
-
-
-
-!\[Threat Feed](docs/05\_cti\_threat\_feed.png)
-
-
-
-Displays processed threat-intelligence articles collected from external sources.
-
-
-
-\---
-
-
-
-\## APT / Threat Groups
-
-
-
-!\[APT Groups](docs/06\_cti\_apt\_groups.png)
-
-
-
-Displays high-confidence threat groups identified during article processing.
-
-
-
-\---
-
-
-
-\# Technology Stack
-
-
-
-\### Backend
-
-
-
-\* Python
-
-\* FastAPI
-
-\* PostgreSQL
-
-\* Pydantic
-
-\* Uvicorn
-
-
-
-\### Frontend
-
-
-
-\* React
-
-\* Vite
-
-\* JavaScript
-
-\* HTML
-
-\* CSS
-
-
-
-\### Infrastructure
-
-
-
-\* Docker
-
-\* Docker Desktop
-
-\* PostgreSQL 16
-
-\* Windows / PowerShell
-
-
-
-\### Threat Intelligence
-
-
-
-\* CISA Known Exploited Vulnerabilities
-
-\* NVD
-
-\* ThreatFox
-
-\* Ransomware.live
-
-\* The Hacker News
-
-\* AbuseIPDB
-
-\* Optional Shodan integration
-
-
-
-\### AI
-
-
-
-\* Ollama
-
-\* Llama 3.2
-
-
-
-\---
-
-
-
-\# Intelligence Processing Pipeline
-
-
-
-The platform follows a multi-stage processing workflow:
-
-
+## 🔄 Intelligence Processing Pipeline
 
 ```text
-
-External Threat Feeds
-
-&#x20;       │
-
-&#x20;       ▼
-
+Threat Feeds
+     │
+     ▼
 Raw Data Ingestion
-
-&#x20;       │
-
-&#x20;       ▼
-
+     │
+     ▼
 Normalization
-
-&#x20;       │
-
-&#x20;       ▼
-
+     │
+     ▼
 Deduplication
-
-&#x20;       │
-
-&#x20;       ▼
-
+     │
+     ▼
 IOC / CVE / Article Processing
-
-&#x20;       │
-
-&#x20;       ▼
-
-Threat Intelligence Database
-
-&#x20;       │
-
-&#x20;       ├──────────────► NVD Enrichment
-
-&#x20;       │
-
-&#x20;       ├──────────────► AbuseIPDB Enrichment
-
-&#x20;       │
-
-&#x20;       ├──────────────► Risk Scoring
-
-&#x20;       │
-
-&#x20;       └──────────────► Threat Group Identification
-
-&#x20;       │
-
-&#x20;       ▼
-
-FastAPI
-
-&#x20;       │
-
-&#x20;       ▼
-
-React Dashboard
-
+     │
+     ▼
+PostgreSQL
+     │
+     ├──► NVD Enrichment
+     │
+     ├──► AbuseIPDB Enrichment
+     │
+     ├──► Risk Scoring
+     │
+     └──► Threat Group Identification
+              │
+              ▼
+          FastAPI API
+              │
+              ▼
+        React Dashboard
 ```
 
+---
 
+## 🎯 IOC Risk Scoring
 
-\---
+IOC risk is calculated using multiple intelligence signals rather than a single reputation value.
 
+### Signals include
 
+* AbuseIPDB reputation
+* Abuse report count
+* IOC confidence
+* Threat-intelligence context
+* Indicator type
+* Enrichment metadata
 
-\# IOC Risk Scoring
-
-
-
-The platform assigns risk based on multiple intelligence signals rather than relying on a single indicator.
-
-
-
-Signals can include:
-
-
-
-\* AbuseIPDB reputation
-
-\* Number of reports
-
-\* IOC confidence
-
-\* Threat intelligence context
-
-\* Indicator type
-
-\* Other enrichment metadata
-
-
-
-Example:
-
-
+### Example Result
 
 ```text
-
-IOC
-
-&#x20;│
-
-&#x20;├── AbuseIPDB score
-
-&#x20;├── Abuse reports
-
-&#x20;├── Confidence
-
-&#x20;└── Intelligence context
-
-&#x20;         │
-
-&#x20;         ▼
-
-&#x20;     Risk Score
-
-&#x20;         │
-
-&#x20;         ▼
-
-&#x20;   LOW / MEDIUM / HIGH
-
+IOC:              103.102.31.18
+Risk Score:       49
+AbuseIPDB Score:  25
+Reports:          11
+Risk Level:       MEDIUM
 ```
 
+---
 
+## 🔌 API
 
-During testing, the platform identified one medium-risk IOC:
+The backend is exposed through **FastAPI**.
 
-
-
-```text
-
-IOC: 103.102.31.18
-
-Risk Score: 49
-
-AbuseIPDB Score: 25
-
-Reports: 11
-
-Risk Level: MEDIUM
-
-```
-
-
-
-\---
-
-
-
-\# API
-
-
-
-The backend is exposed through FastAPI.
-
-
-
-Local API:
-
-
+### Example endpoints
 
 ```text
-
-http://127.0.0.1:8001
-
-```
-
-
-
-Swagger documentation:
-
-
-
-```text
-
-http://127.0.0.1:8001/docs
-
-```
-
-
-
-\### Example API endpoints
-
-
-
-```text
-
 POST /login
-
 POST /chat
-
 GET  /stats
-
 GET  /iocs
-
 GET  /iocs/recurring
-
 GET  /ioc/{value}
-
 ```
 
-
-
-The API provides access to authentication, statistics, IOC investigation, recurring indicators, and chatbot functionality.
-
-
-
-\---
-
-
-
-\# Local Setup
-
-
-
-\## Requirements
-
-
-
-Install the following:
-
-
-
-\* Python 3.12+
-
-\* Node.js
-
-\* npm
-
-\* Docker Desktop
-
-\* Git
-
-
-
-\---
-
-
-
-\## 1. Clone the Repository
-
-
-
-```powershell
-
-git clone https://github.com/Vineet-Shrimal/custom-threat-intelligence-platform.git
-
-cd custom-threat-intelligence-platform
-
-```
-
-
-
-\---
-
-
-
-\## 2. Start PostgreSQL
-
-
-
-The project uses PostgreSQL through Docker.
-
-
-
-Example:
-
-
-
-```powershell
-
-docker start cti-postgres
-
-```
-
-
-
-If the container does not exist yet, create it according to your PostgreSQL configuration.
-
-
-
-\---
-
-
-
-\## 3. Configure Backend Environment
-
-
-
-Create:
-
-
+Local Swagger documentation:
 
 ```text
-
-backend/.env
-
+http://127.0.0.1:8001/docs
 ```
 
+---
 
+## 🗄️ Database
 
-Use `backend/.env.example` as the template.
+PostgreSQL stores the normalized threat-intelligence data.
 
+Main tables:
 
+```text
+apt_groups
+articles
+cves
+ioc_enrichment
+ioc_sightings
+iocs
+raw_items
+```
 
-Do \*\*not\*\* commit `.env` files containing real credentials or API keys.
+The `raw_items` layer preserves ingested intelligence before it is processed into structured entities.
 
+---
 
+## 🔐 Security Considerations
 
-\---
+The project includes basic security controls such as:
 
+* Environment-based secret configuration
+* `.env` exclusion from Git
+* JWT authentication
+* MFA support
+* Separate database roles
+* API authentication
+* CORS configuration
+* Local-only development services
 
+> **Never commit real API keys, passwords, JWT secrets, MFA secrets, or other credentials.**
 
-\## 4. Install Backend Dependencies
+---
 
+## ⚙️ Local Setup
 
+### Requirements
+
+* Python 3.12+
+* Node.js
+* npm
+* Docker Desktop
+* Git
+
+### Clone
+
+```bash
+git clone https://github.com/Vineet-Shrimal/custom-threat-intelligence-platform.git
+cd custom-threat-intelligence-platform
+```
+
+### Backend
 
 ```powershell
-
 cd backend
-
-```
-
-
-
-Create a virtual environment:
-
-
-
-```powershell
-
 python -m venv venv
-
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
+Create `backend/.env` using:
 
+```text
+backend/.env.example
+```
 
-Install dependencies:
-
-
+Then start FastAPI from the project root:
 
 ```powershell
-
-.\\venv\\Scripts\\python.exe -m pip install -r requirements.txt
-
+.\backend\venv\Scripts\python.exe -m uvicorn backend.api:app --host 127.0.0.1 --port 8001
 ```
-
-
-
-\---
-
-
-
-\## 5. Start the FastAPI Backend
-
-
-
-From the project root:
-
-
-
-```powershell
-
-.\\backend\\venv\\Scripts\\python.exe -m uvicorn backend.api:app --host 127.0.0.1 --port 8001
-
-```
-
-
 
 Swagger:
 
-
-
 ```text
-
 http://127.0.0.1:8001/docs
-
 ```
 
+### Frontend
 
-
-> Port `8001` is used because port `8000` is occupied by a local Splunk instance in the development environment.
-
-
-
-\---
-
-
-
-\## 6. Start the Frontend
-
-
-
-Open a second PowerShell terminal:
-
-
+Open a second terminal:
 
 ```powershell
-
 cd frontend
-
 npm install
-
 npm.cmd run dev
-
 ```
 
-
-
-The frontend will normally be available at:
-
-
+Frontend:
 
 ```text
-
 http://localhost:5173
-
 ```
 
+> Port `8001` is used by the development environment because port `8000` was occupied by a local Splunk instance.
 
+---
 
-\---
-
-
-
-\# Database
-
-
-
-The platform uses PostgreSQL to store structured intelligence.
-
-
-
-Main tables include:
-
-
+## 📁 Project Structure
 
 ```text
-
-apt\_groups
-
-articles
-
-cves
-
-ioc\_enrichment
-
-ioc\_sightings
-
-iocs
-
-raw\_items
-
-```
-
-
-
-The `raw\_items` layer preserves ingested intelligence before it is processed into structured entities.
-
-
-
-\---
-
-
-
-\# Security Considerations
-
-
-
-The project was developed with basic security practices in mind:
-
-
-
-\* Secrets stored outside source code
-
-\* `.env` files excluded from Git
-
-\* Environment variable templates provided
-
-\* JWT-based authentication
-
-\* MFA support
-
-\* Separate database roles
-
-\* API authentication
-
-\* CORS configuration
-
-\* Local-only development services
-
-
-
-\*\*Never commit real API keys, passwords, JWT secrets, MFA secrets, or other credentials.\*\*
-
-
-
-\---
-
-
-
-\# Known Limitations
-
-
-
-\* Some public feeds require API keys or have rate limits.
-
-\* Threat-intelligence feeds can change format over time.
-
-\* LLM-based extraction can produce incorrect classifications.
-
-\* Threat-group classification therefore uses additional high-confidence validation rules.
-
-\* Shodan enrichment is included as an optional integration but was not treated as a verified enrichment result because the configured request returned HTTP 401.
-
-\* The platform is intended as a portfolio/lab project rather than a production-grade enterprise TIP.
-
-
-
-\---
-
-
-
-\# Project Structure
-
-
-
-```text
-
 custom-threat-intelligence-platform/
-
 │
-
 ├── backend/
-
 │   ├── api.py
-
 │   ├── auth.py
-
 │   ├── chatbot.py
-
-│   ├── compute\_risk.py
-
-│   ├── processor\_articles.py
-
-│   ├── processor\_structured.py
-
-│   ├── connector\_cisa\_kev.py
-
-│   ├── connector\_hackernews.py
-
-│   ├── connector\_nvd.py
-
-│   ├── connector\_rl\_iocs.py
-
-│   ├── connector\_threatfox.py
-
-│   ├── setup\_admin.py
-
-│   ├── schema\_patch.sql
-
+│   ├── compute_risk.py
+│   ├── processor_articles.py
+│   ├── processor_structured.py
+│   ├── connector_cisa_kev.py
+│   ├── connector_hackernews.py
+│   ├── connector_nvd.py
+│   ├── connector_rl_iocs.py
+│   ├── connector_threatfox.py
 │   └── requirements.txt
-
 │
-
 ├── frontend/
-
 │   ├── src/
-
 │   ├── public/
-
 │   ├── package.json
-
-│   └── vite.config.\*
-
+│   └── vite.config.*
 │
-
 ├── docs/
-
-│   ├── 01\_cti\_login\_page.png
-
-│   ├── 02\_cti\_dashboard.png
-
-│   ├── 03\_cti\_enriched\_dashboard.png
-
-│   ├── 04\_cti\_cve\_vulnerabilities.png
-
-│   ├── 05\_cti\_threat\_feed.png
-
-│   └── 06\_cti\_apt\_groups.png
-
+│   ├── 01_cti_login_page.png
+│   ├── 02_cti_dashboard.png
+│   ├── 03_cti_enriched_dashboard.png
+│   ├── 04_cti_cve_vulnerabilities.png
+│   ├── 05_cti_threat_feed.png
+│   └── 06_cti_apt_groups.png
 │
-
-├── ORIGINAL\_PROJECT\_CREDIT.md
-
+├── ORIGINAL_PROJECT_CREDIT.md
 ├── README.md
-
 └── .gitignore
-
 ```
 
+---
 
+## ⚠️ Known Limitations
 
-\---
+* Some threat feeds require API keys or are subject to rate limits.
+* Public feed formats may change.
+* LLM-based extraction can produce incorrect classifications.
+* High-confidence validation rules are used for selected threat-group classifications.
+* Shodan integration is optional and was not treated as a verified enrichment result because the configured request returned HTTP 401.
+* This is a **portfolio/lab project**, not a production-grade enterprise TIP.
 
+---
 
+## 📌 Attribution
 
-\# Project Attribution
-
-
-
-This project is an \*\*adapted and reworked implementation\*\* based on the original Custom Threat Intelligence Platform project by \*\*Aditya Raj\*\*.
-
-
+This project is an **adapted and reworked implementation** based on the original Custom Threat Intelligence Platform project by **Aditya Raj**.
 
 Original project:
 
-
-
-```text
-
 https://github.com/adityrajtiwary/Custom-Threat-intel-Platform
 
-```
+The implementation has been substantially adapted for portfolio development, including changes to the processing pipeline, enrichment workflow, risk scoring, frontend/API configuration, threat-group handling, documentation, and local deployment.
 
+See [`ORIGINAL_PROJECT_CREDIT.md`](ORIGINAL_PROJECT_CREDIT.md) for additional attribution details.
 
+---
 
-The repository has been substantially adapted for portfolio development, including changes to the processing pipeline, enrichment workflow, risk scoring, frontend/API configuration, threat-group handling, documentation, and local deployment.
-
-
-
-See \[`ORIGINAL\_PROJECT\_CREDIT.md`](ORIGINAL\_PROJECT\_CREDIT.md) for additional attribution details.
-
-
-
-\---
-
-
-
-\# Portfolio Focus
-
-
+## 🎯 Portfolio Focus
 
 This project demonstrates practical exposure to:
 
+**Threat Intelligence · IOC Investigation · Vulnerability Intelligence · CVE/KEV Analysis · IOC Enrichment · Risk Scoring · PostgreSQL · REST APIs · FastAPI · React · Docker · Authentication · MFA · Python Automation · LLM-assisted Security Workflows**
 
+Relevant to:
 
-\* Threat Intelligence
-
-\* IOC investigation
-
-\* Vulnerability intelligence
-
-\* CVE / CISA KEV analysis
-
-\* Threat feed ingestion
-
-\* IOC enrichment
-
-\* Risk scoring
-
-\* PostgreSQL
-
-\* REST APIs
-
-\* FastAPI
-
-\* React
-
-\* Docker
-
-\* Authentication and MFA
-
-\* Security-focused data processing
-
-\* Basic automation and Python scripting
-
-\* LLM-assisted cybersecurity workflows
-
-
-
-These skills are directly relevant to \*\*SOC Analyst, Cybersecurity Analyst, Threat Intelligence Analyst, and Security Operations\*\* roles.
-
-
-
+**SOC Analyst · Cybersecurity Analyst · Threat Intelligence Analyst · Security Operations**
