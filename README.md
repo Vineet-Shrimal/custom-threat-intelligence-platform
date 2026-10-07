@@ -404,20 +404,6 @@ custom-threat-intelligence-platform/
 
 ---
 
-## 📌 Attribution
-
-This project is an **adapted and reworked implementation** based on the original Custom Threat Intelligence Platform project by **Aditya Raj**.
-
-Original project:
-
-https://github.com/adityrajtiwary/Custom-Threat-intel-Platform
-
-The implementation has been substantially adapted for portfolio development, including changes to the processing pipeline, enrichment workflow, risk scoring, frontend/API configuration, threat-group handling, documentation, and local deployment.
-
-See [`ORIGINAL_PROJECT_CREDIT.md`](ORIGINAL_PROJECT_CREDIT.md) for additional attribution details.
-
----
-
 ## 🎯 Portfolio Focus
 
 This project demonstrates practical exposure to:
